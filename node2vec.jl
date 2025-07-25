@@ -18,19 +18,58 @@ poi_with_nearest_points = OSMXGraph.add_nearest_road_point(POI_df,POI_xs, POI_ys
 OSMXGraph.save_file(poi_with_nearest_points,"poi_with_nearest_points.csv")
 
 
-function non_first_move_table()
-    pass
+"""
+only for testing - OSMXGraph already returns sparse matrix  
+"""
+function generate_sparse_matrix(graph; is_weighted = false) 
+    num_of_nodes = nv(graph)
+    cols = Int[]
+    rows = Int[]
+    vals = Float64[]
+    for node in 1:num_of_nodes
+        nrbs = outneighbors(graph,node)
+        n_nrbs = length(nrbs)
+        append!(cols,fill(node,n_nrbs))
+        append!(rows,nrbs)
+        if !is_weighted
+            append!(vals,ones(Float64,n_nrbs))
+        end
+    end
+    return sparse(rows,cols,vals,num_of_nodes,num_of_nodes)
 end
 
-function generate_move()
-    pass
+@inline function get_neighbors_info(sparse_matrix,node)
+    ind = sparse_matrix.colptr[node]: sparse_matrix.colptr[node+1]-1
+    return @view(sparse_matrix.rowval[ind]), @view(sparse_matrix.nzval[ind])
 end
 
-function generate_one_path()
-    pass
+
+function generate_first_move(start_node,sparse_matrix)
+    neighbs, probs = get_neighbors_info(sparse_matrix, start_node)
+    if isempty(neighbs)
+        return -1
+    end
+    return sample(neighbs,Weights(probs))
 end
 
-function generate_n_paths()
-    pass
-end
 
+function generate_biased_move(curr_node, prev_node, sparse_matrix, p, q)
+    neighbs, probs = get_neighbors_info(sparse_matrix, curr_node)
+    if isempty(neighbs)
+        return -1
+    end
+    p_q_probs = Vector{Float64}(undef, length(probs))
+    prev_node_neighs = Set(get_neighbors_info(sparse_matrix,prev_node)[1])
+    @inbounds for idx in eachindex(neighbs)
+        dst = neighbs[idx]
+        pr = probs[idx]
+        if dst == prev_node
+            p_q_probs[idx] = pr/p
+        elseif dst in prev_node_neighs
+            p_q_probs[idx] = pr  
+        else
+            p_q_probs[idx] = pr/q
+        end
+    end
+    return sample(neighbs,Weights(p_q_probs))
+end
