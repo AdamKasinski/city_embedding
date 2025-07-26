@@ -46,18 +46,15 @@ end
 
 function generate_first_move(start_node,sparse_matrix)
     neighbs, probs = get_neighbors_info(sparse_matrix, start_node)
-    if isempty(neighbs)
-        return -1
-    end
+    isempty(neighbs) && return nothing    
     return sample(neighbs,Weights(probs))
 end
 
 
 function generate_biased_move(curr_node, prev_node, sparse_matrix, p, q)
     neighbs, probs = get_neighbors_info(sparse_matrix, curr_node)
-    if isempty(neighbs)
-        return -1
-    end
+    isempty(neighbs) && return nothing
+    
     p_q_probs = Vector{Float64}(undef, length(probs))
     prev_node_neighs = Set(get_neighbors_info(sparse_matrix,prev_node)[1])
     @inbounds for idx in eachindex(neighbs)
@@ -73,3 +70,31 @@ function generate_biased_move(curr_node, prev_node, sparse_matrix, p, q)
     end
     return sample(neighbs,Weights(p_q_probs))
 end
+
+function generate_path(start_node,sparse_matrix,path_length,p,q)
+    path = zeros(Int64,path_length)
+    path[1] = start_node
+    curr_node = start_node
+    next_node = generate_first_move(curr_node,sparse_matrix)
+    next_node === nothing && return path
+    path[2] = next_node
+    prev_node, curr_node = curr_node, next_node
+    for indx in 3:path_length
+        next_node = generate_biased_move(curr_node,prev_node,sparse_matrix,p,q)
+        next_node === nothing && break
+        path[indx] = next_node
+        prev_node, curr_node = curr_node, next_node
+    end
+    return path
+end
+
+function generate_corpus(n_path,path_length,sparse_matrix,p,q)
+    corpus = zeros(Int64,(n_path,path_length))
+    N = size(sparse_matrix,1)
+    for path in 1:n_path
+        start_node = rand(1:N)
+        corpus[path,:] = generate_path(start_node, sparse_matrix, path_length, p, q)
+    end
+    return corpus
+end
+
