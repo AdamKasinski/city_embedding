@@ -2,7 +2,7 @@
 
 [![DOI](https://zenodo.org/badge/1021115916.svg)](https://doi.org/10.5281/zenodo.16621733)
 
-This repository delivers a Julia implementation of the node2vec algorithm. It handles every step of the pipeline except the final skip‑gram optimiser, 
+This repository provides a Julia implementation of node2vec, one of the leading city-embedding algorithms. It handles every step of the pipeline except the final skip‑gram optimiser, 
 which is delegated to Word2Vec.jl so that we can rely on Google’s tested C binary for fast training.
 
 ### High‑level workflow  
@@ -148,5 +148,5 @@ model = word2vec("walks.txt","out.bin", cbow = 0)
 
 ### Aknowledgments
 
-This research was funded by National Science Centre, Poland, grant number 2021/41/B/HS4/03349
+This research was funded by National Science Centre, Poland, grant number 2021/41/B/HS4/03349.
 The module builds upon two different packages for manipulating OpenStreetMap data: OpenStreetMapX.jl (https://github.com/pszufe/OpenStreetMapX.jl) and OSMXGraph.jl (https://github.com/AdamKasinski/OSMXGraph.jl). 
