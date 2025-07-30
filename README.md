@@ -131,6 +131,7 @@ open("walks.txt", "w") do io
 end
 
 model = word2vec("walks.txt","out.bin", cbow = 0)
+""
 ```
 
     Starting training using file walks.txt
@@ -139,7 +140,7 @@ model = word2vec("walks.txt","out.bin", cbow = 0)
 
 
 
-    Process(`[4m/home/adamkas/.julia/artifacts/0c86f7feb8f6b4ab5f9fb793f1fde1278e3a6021/bin/word2vec[24m [4m-train[24m [4mwalks.txt[24m [4m-output[24m [4mout.bin[24m [4m-size[24m [4m100[24m [4m-window[24m [4m5[24m [4m-sample[24m [4m0.001[24m [4m-hs[24m [4m0[24m [4m-negative[24m [4m5[24m [4m-threads[24m [4m12[24m [4m-iter[24m [4m5[24m [4m-min-count[24m [4m5[24m [4m-alpha[24m [4m0.025[24m [4m-debug[24m [4m2[24m [4m-binary[24m [4m0[24m [4m-cbow[24m [4m0[24m`, ProcessExited(0))
+    ""
 
 
 ### Aknowledgments
