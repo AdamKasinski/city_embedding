@@ -1,4 +1,7 @@
 ### node2vec
+
+[![DOI](https://zenodo.org/badge/1021115916.svg)](https://doi.org/10.5281/zenodo.16621733)
+
 This repository delivers a Julia implementation of the node2vec algorithm. It handles every step of the pipeline except the final skip‑gram optimiser, 
 which is delegated to Word2Vec.jl so that we can rely on Google’s tested C binary for fast training.
 
